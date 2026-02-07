@@ -1,8 +1,9 @@
 import os
 from dotenv import load_dotenv
 
-from langchain_openai import ChatOpenAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.tools import tool
+from openai import vector_stores
 
 load_dotenv()
 # Створюємо LLM-об'єкт
@@ -37,3 +38,18 @@ def safe_calculate(expression: str) -> str:
 # def func_new():
 #     n = "qwerty"  # func() -> n = "qwerty"
 #-------------------------------------------------
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+
+with open("data/faq.txt", "r", encoding="utf-8") as f:
+    faq_text = f.read()
+splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=20)
+docs = splitter.split_text(faq_text)
+
+embeddings = OpenAIEmbeddings()
+vector_store = FAISS(
+    embedding_function=embeddings,
+    index=index,
+    docstore=InMemoryDocstore(),
+    index_to_docstore_id={},
+)
